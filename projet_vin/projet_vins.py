@@ -24,7 +24,7 @@ df_extremes = pd.concat([extremes, moyens], ignore_index=True)
 df_extremes["target"] = pd.cut(df_extremes["quality"], bins=[0, 4, 6, 10], labels=[0, 1, 2]).astype(int)
 
 print(f"Nombre total de vins sélectionnés : {len(df_extremes)}")
-print("Répartition (0 = Mauvais, 1 = Bon) :\n", df_extremes["target"].value_counts(), "\n")
+print("Répartition (0 = Mauvais, 1 = Moyen, 2 = Bon) :\n", df_extremes["target"].value_counts(), "\n")
 
 proportions = df_extremes["target"].value_counts(normalize=True)
 print("Proportions :\n", proportions.round(3), "\n")
@@ -47,7 +47,7 @@ baseline.fit(X_train_scaled, y_train)
 pred_base = baseline.predict(X_test_scaled)
 print(f"Précision Régression Logistique (Baseline) : {accuracy_score(y_test, pred_base):.2%}")
 print(confusion_matrix(y_test, pred_base))
-print(classification_report(y_test, pred_base, target_names=["Mauvais (3-4)","moyen (5-6)", "Bon (7-8)"]))
+print(classification_report(y_test, pred_base, target_names=["Mauvais (3-4)","moyen (5-6)", "Bon (7-9)"]))
 
 # 5. MODÈLE 2 : RANDOM FOREST
 rf = RandomForestClassifier(n_estimators=100, class_weight ="balanced", random_state=42)
@@ -55,7 +55,7 @@ rf.fit(X_train, y_train)
 pred_rf = rf.predict(X_test)
 print(f"Précision Random Forest : {accuracy_score(y_test, pred_rf):.2%}\n")
 print(confusion_matrix(y_test, pred_rf))
-print(classification_report(y_test, pred_rf, target_names=["Mauvais (3-4)","moyen (5-6)", "Bon (7-8)"]))
+print(classification_report(y_test, pred_rf, target_names=["Mauvais (3-4)","moyen (5-6)", "Bon (7-9)"]))
 
 # 6. IMPORTANCE DES VARIABLES CHIMIQUES
 importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values(ascending=False)
@@ -76,8 +76,8 @@ sns.heatmap(
     annot=True,
     fmt="d",
     cmap="Blues",
-    xticklabels=["Mauvais (3-4)", "moyen (5-6)", "Bon (7-8)"],
-    yticklabels=["Mauvais (3-4)", "moyen (5-6)", "Bon (7-8)"],
+    xticklabels=["Mauvais (3-4)", "moyen (5-6)", "Bon (7-9)"],
+    yticklabels=["Mauvais (3-4)", "moyen (5-6)", "Bon (7-9)"],
     ax=axes[0],
 )
 axes[0].set_title("Matrice de confusion")
@@ -85,7 +85,7 @@ axes[0].set_xlabel("Prédiction du modèle")
 axes[0].set_ylabel("Vraie qualité du vin")
 
 # Graphique 2 : Importance des variables chimiques
-importances = pd.Series(modele.feature_importances_, index=X.columns).sort_values()
+importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values()
 importances.plot(kind="barh", color="teal", ax=axes[1])
 axes[1].set_title("Importance des caractéristiques du vin")
 axes[1].set_xlabel("Poids dans la décision du modèle")
