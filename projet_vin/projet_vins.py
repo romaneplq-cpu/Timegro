@@ -57,27 +57,28 @@ from sklearn.metrics import confusion_matrix
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 # Graphique 1 : Matrice de confusion
-cm = confusion_matrix(y_test, predictions)
+cm = confusion_matrix(y_test, pred_rf)
 sns.heatmap(
     cm,
+    cbar = True,
     annot=True,
     fmt="d",
-    cmap="Blues",
+    cmap="Purples",
     xticklabels=["Mauvais (3-4)", "Bon (7-8)"],
     yticklabels=["Mauvais (3-4)", "Bon (7-8)"],
     ax=axes[0],
 )
-axes[0].set_title("Matrice de confusion")
+axes[0].set_title("Matrice de confusion (Random Forest)")
 axes[0].set_xlabel("Prédiction du modèle")
 axes[0].set_ylabel("Vraie qualité du vin")
 
 # Graphique 2 : Importance des variables chimiques
-importances = pd.Series(modele.feature_importances_, index=X.columns).sort_values()
+importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values()
 importances.plot(kind="barh", color="teal", ax=axes[1])
 axes[1].set_title("Importance des caractéristiques du vin")
 axes[1].set_xlabel("Poids dans la décision du modèle")
 
-# Ajuster l'espacement, sauvegarder en image et afficher à l'écran
+# Sauvegarder et afficher
 plt.tight_layout()
-plt.savefig("resultats_modele.png", dpi=300)
+plt.savefig("projet_vin/resultats_modele.png", dpi=300)
 plt.show()
